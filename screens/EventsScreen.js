@@ -5,7 +5,7 @@ const eventsData = [
   {
     id: '1',
     name: 'Purdue Football Game vs Indiana',
-    date: '11/23/2024',
+    date: '11/23/2025',
     time: '12:00 PM',
     location: 'Ross-Ade Stadium',
     parkingImpact: 'Heavy traffic and parking lot closures around the stadium and campus.',
@@ -13,7 +13,7 @@ const eventsData = [
   {
     id: '2',
     name: 'Fall Concert Series: The Chainsmokers',
-    date: '11/18/2024',
+    date: '11/18/2025',
     time: '8:00 PM',
     location: 'Elliott Hall of Music',
     parkingImpact: 'Increased demand at nearby garages like Grant Street and University Street.',
@@ -21,7 +21,7 @@ const eventsData = [
   {
     id: '3',
     name: 'Purdue Career Fair',
-    date: '11/16/2024',
+    date: '9/16/2025',
     time: '10:00 AM - 3:00 PM',
     location: 'Purdue Memorial Union',
     parkingImpact: 'High traffic and limited spots in the PMU and Grant Street garages.',
@@ -29,7 +29,7 @@ const eventsData = [
   {
     id: '4',
     name: 'Men\'s Basketball Game vs Illinois',
-    date: '12/05/2024',
+    date: '12/05/2025',
     time: '7:00 PM',
     location: 'Mackey Arena',
     parkingImpact: 'Heavy congestion and lot closures, especially near Northwestern and Grant Street garages.',

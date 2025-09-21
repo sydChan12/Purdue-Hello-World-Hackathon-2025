@@ -8,7 +8,9 @@ import {
   Alert,
   FlatList,
   KeyboardAvoidingView,
-  Platform
+  Platform,
+  StatusBar,
+  ScrollView,
 } from 'react-native';
 
 // Map component placeholder
@@ -45,71 +47,64 @@ export default function CommunityUpdatesScreen() {
     },
   ]);
   const [newUpdateDescription, setNewUpdateDescription] = useState('');
-  const [newUpdateType, setNewUpdateType] = useState('open_spot'); // Default type
+  const [newUpdateType, setNewUpdateType] = useState('open_spot');
   const [location, setLocation] = useState(null);
-
-  // New state to track user's votes and the type of vote
   const [userVotes, setUserVotes] = useState({});
 
   const dropPin = () => {
     Alert.alert(
-      "Drop a Pin",
-      "This feature would allow you to select a location on the map to report an issue. For this prototype, a mock location has been set.",
-      [{ text: "OK", onPress: () => setLocation({ latitude: 40.4287, longitude: -86.9137 }) }]
+      'Drop a Pin',
+      'This feature would allow you to select a location on the map to report an issue. For this prototype, a mock location has been set.',
+      [{ text: 'OK', onPress: () => setLocation({ latitude: 40.4287, longitude: -86.9137 }) }]
     );
   };
 
   const submitUpdate = () => {
     if (!newUpdateDescription || !location) {
-      Alert.alert("Missing Info", "Please provide a description and location.");
+      Alert.alert('Missing Info', 'Please provide a description and location.');
       return;
     }
-    
+
     const newUpdate = {
-      id: Date.now().toString(), // Simple unique ID
+      id: Date.now().toString(),
       description: newUpdateDescription,
       type: newUpdateType,
       location: location,
       upvotes: 0,
       downvotes: 0,
     };
-    
-    setUpdates(prevUpdates => [newUpdate, ...prevUpdates]);
+
+    setUpdates(prev => [newUpdate, ...prev]);
     setNewUpdateDescription('');
     setLocation(null);
-    Alert.alert("Success", "Your update has been submitted!");
+    Alert.alert('Success', 'Your update has been submitted!');
   };
 
   const handleVote = (updateId, voteType) => {
-    setUpdates(prevUpdates => 
-      prevUpdates.map(update => {
+    setUpdates(prev =>
+      prev.map(update => {
         if (update.id === updateId) {
-          // Check if user is removing their vote
           if (userVotes[updateId] === voteType) {
             setUserVotes(prevVotes => ({ ...prevVotes, [updateId]: null }));
-            if (voteType === 'upvote') {
-              return { ...update, upvotes: update.upvotes - 1 };
-            } else {
-              return { ...update, downvotes: update.downvotes - 1 };
-            }
-          }
-          // Check if user is changing their vote
-          else if (userVotes[updateId]) {
+            return {
+              ...update,
+              upvotes: voteType === 'upvote' ? update.upvotes - 1 : update.upvotes,
+              downvotes: voteType === 'downvote' ? update.downvotes - 1 : update.downvotes,
+            };
+          } else if (userVotes[updateId]) {
             setUserVotes(prevVotes => ({ ...prevVotes, [updateId]: voteType }));
-            if (voteType === 'upvote') {
-              return { ...update, upvotes: update.upvotes + 1, downvotes: update.downvotes - 1 };
-            } else {
-              return { ...update, downvotes: update.downvotes + 1, upvotes: update.upvotes - 1 };
-            }
-          }
-          // User is casting their first vote
-          else {
+            return {
+              ...update,
+              upvotes: voteType === 'upvote' ? update.upvotes + 1 : update.upvotes - 1,
+              downvotes: voteType === 'downvote' ? update.downvotes + 1 : update.downvotes - 1,
+            };
+          } else {
             setUserVotes(prevVotes => ({ ...prevVotes, [updateId]: voteType }));
-            if (voteType === 'upvote') {
-              return { ...update, upvotes: update.upvotes + 1 };
-            } else {
-              return { ...update, downvotes: update.downvotes + 1 };
-            }
+            return {
+              ...update,
+              upvotes: voteType === 'upvote' ? update.upvotes + 1 : update.upvotes,
+              downvotes: voteType === 'downvote' ? update.downvotes + 1 : update.downvotes,
+            };
           }
         }
         return update;
@@ -128,14 +123,14 @@ export default function CommunityUpdatesScreen() {
         </Text>
         <Text style={styles.updateDescription}>{item.description}</Text>
         <View style={styles.voteContainer}>
-          <TouchableOpacity 
-            style={[styles.voteButton, hasVotedUp && styles.upvoted]} 
+          <TouchableOpacity
+            style={[styles.voteButton, hasVotedUp && styles.upvoted]}
             onPress={() => handleVote(item.id, 'upvote')}
           >
             <Text style={styles.voteText}>👍 {item.upvotes}</Text>
           </TouchableOpacity>
-          <TouchableOpacity 
-            style={[styles.voteButton, hasVotedDown && styles.downvoted]} 
+          <TouchableOpacity
+            style={[styles.voteButton, hasVotedDown && styles.downvoted]}
             onPress={() => handleVote(item.id, 'downvote')}
           >
             <Text style={styles.voteText}>👎 {item.downvotes}</Text>
@@ -146,110 +141,115 @@ export default function CommunityUpdatesScreen() {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
-      <Text style={styles.title}>🗣️ Community Updates</Text>
-      
-      <MapView />
+    <>
+      <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
+        <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
+          <Text style={styles.title}>🗣️ Community Updates</Text>
 
-      <FlatList
-        data={updates.sort((a, b) => (b.upvotes - b.downvotes) - (a.upvotes - a.downvotes))}
-        keyExtractor={(item) => item.id}
-        renderItem={renderUpdateCard}
-      />
+          <MapView />
 
-      <View style={styles.submitForm}>
-        <Text style={styles.formTitle}>Add a New Update</Text>
-        <View style={styles.typeSelector}>
-          <TouchableOpacity
-            style={[styles.typeButton, newUpdateType === 'open_spot' && styles.activeTypeButton]}
-            onPress={() => setNewUpdateType('open_spot')}
-          >
-            <Text style={styles.typeButtonText}>Open Spot</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.typeButton, newUpdateType === 'closure' && styles.activeTypeButton]}
-            onPress={() => setNewUpdateType('closure')}
-          >
-            <Text style={styles.typeButtonText}>Closure</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.typeButton, newUpdateType === 'construction' && styles.activeTypeButton]}
-            onPress={() => setNewUpdateType('construction')}
-          >
-            <Text style={styles.typeButtonText}>Construction</Text>
-          </TouchableOpacity>
-        </View>
+          <FlatList
+            data={updates.sort((a, b) => (b.upvotes - b.downvotes) - (a.upvotes - a.downvotes))}
+            keyExtractor={item => item.id}
+            renderItem={renderUpdateCard}
+          />
 
-        <TextInput
-          style={styles.input}
-          placeholder="Describe the update..."
-          placeholderTextColor="#888"
-          value={newUpdateDescription}
-          onChangeText={setNewUpdateDescription}
-          multiline
-        />
+          <View style={styles.submitForm}>
+            <Text style={styles.formTitle}>Add a New Update</Text>
+            <View style={styles.typeSelector}>
+              <TouchableOpacity
+                style={[styles.typeButton, newUpdateType === 'open_spot' && styles.activeTypeButton]}
+                onPress={() => setNewUpdateType('open_spot')}
+              >
+                <Text style={styles.typeButtonText}>Open Spot</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.typeButton, newUpdateType === 'closure' && styles.activeTypeButton]}
+                onPress={() => setNewUpdateType('closure')}
+              >
+                <Text style={styles.typeButtonText}>Closure</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.typeButton, newUpdateType === 'construction' && styles.activeTypeButton]}
+                onPress={() => setNewUpdateType('construction')}
+              >
+                <Text style={styles.typeButtonText}>Construction</Text>
+              </TouchableOpacity>
+            </View>
 
-        <TouchableOpacity style={styles.dropPinButton} onPress={dropPin}>
-          <Text style={styles.dropPinButtonText}>Drop a Pin on the Map</Text>
-        </TouchableOpacity>
+            <TextInput
+              style={styles.input}
+              placeholder="Describe the update..."
+              placeholderTextColor="#888"
+              value={newUpdateDescription}
+              onChangeText={setNewUpdateDescription}
+              multiline
+            />
 
-        <TouchableOpacity style={styles.submitButton} onPress={submitUpdate}>
-          <Text style={styles.submitButtonText}>Submit Update</Text>
-        </TouchableOpacity>
-      </View>
-    </KeyboardAvoidingView>
+            <TouchableOpacity style={styles.dropPinButton} onPress={dropPin}>
+              <Text style={styles.dropPinButtonText}>Drop a Pin on the Map</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.submitButton} onPress={submitUpdate}>
+              <Text style={styles.submitButtonText}>Submit Update</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1C1C1E',
+    backgroundColor: '#000000',
     padding: 24,
   },
   title: {
-    fontSize: 26,
+    fontSize: 32,
     fontWeight: 'bold',
-    color: '#A259FF',
+    color: '#dea663',
     marginBottom: 20,
     textAlign: 'center',
   },
   mapContainer: {
-    backgroundColor: '#3A3A3C',
+    backgroundColor: '#1a1a1a',
     height: 200,
     borderRadius: 14,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 20,
-    overflow: 'hidden',
+    borderColor: '#bf8441',
+    borderWidth: 1,
   },
   mapDisclaimer: {
     fontSize: 12,
-    color: '#999',
+    color: '#f7e2ad',
     textAlign: 'center',
     padding: 10,
   },
-  updatesList: {
-    flex: 1,
-  },
   card: {
-    backgroundColor: '#2C2C2E',
+    backgroundColor: '#1a1a1a',
     borderRadius: 14,
     padding: 16,
     marginBottom: 16,
+    borderColor: '#bf8441',
+    borderWidth: 1,
   },
   updateType: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#2EC4B6',
+    color: '#bf8441',
     marginBottom: 8,
   },
   updateDescription: {
     fontSize: 14,
-    color: '#F7F7F7',
+    color: '#f7e2ad',
     marginBottom: 10,
   },
   voteContainer: {
@@ -257,11 +257,13 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
   voteButton: {
-    backgroundColor: '#3A3A3C',
+    backgroundColor: '#1a1a1a',
     paddingVertical: 8,
     paddingHorizontal: 12,
     borderRadius: 20,
     marginRight: 10,
+    borderColor: '#bf8441',
+    borderWidth: 1,
   },
   upvoted: {
     borderColor: '#2EC4B6',
@@ -272,19 +274,19 @@ const styles = StyleSheet.create({
     borderWidth: 2,
   },
   voteText: {
-    color: '#F7F7F7',
+    color: '#f7e2ad',
     fontWeight: 'bold',
   },
   submitForm: {
     paddingTop: 20,
-    borderTopColor: '#3A3A3C',
+    borderTopColor: '#bf8441',
     borderTopWidth: 1,
     marginTop: 20,
   },
   formTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#A259FF',
+    color: '#dea663',
     marginBottom: 10,
     textAlign: 'center',
   },
@@ -296,22 +298,26 @@ const styles = StyleSheet.create({
   typeButton: {
     padding: 10,
     borderRadius: 10,
-    backgroundColor: '#3A3A3C',
+    backgroundColor: '#1a1a1a',
+    borderColor: '#bf8441',
+    borderWidth: 1,
   },
   activeTypeButton: {
-    backgroundColor: '#2EC4B6',
+    backgroundColor: '#bf8441',
   },
   typeButtonText: {
-    color: '#F7F7F7',
+    color: '#f7e2ad',
     fontWeight: 'bold',
   },
   input: {
-    backgroundColor: '#2C2C2E',
-    color: '#F7F7F7',
+    backgroundColor: '#1a1a1a',
+    color: '#f7e2ad',
     padding: 14,
     borderRadius: 12,
     marginBottom: 16,
     fontSize: 16,
+    borderColor: '#bf8441',
+    borderWidth: 1,
   },
   dropPinButton: {
     backgroundColor: '#FF6B6B',
@@ -321,17 +327,17 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   dropPinButtonText: {
-    color: '#1C1C1E',
+    color: '#000000',
     fontWeight: 'bold',
   },
   submitButton: {
-    backgroundColor: '#2EC4B6',
+    backgroundColor: '#bf8441',
     padding: 14,
     borderRadius: 14,
     alignItems: 'center',
   },
   submitButtonText: {
-    color: '#1C1C1E',
+    color: '#000000',
     fontWeight: 'bold',
   },
 });

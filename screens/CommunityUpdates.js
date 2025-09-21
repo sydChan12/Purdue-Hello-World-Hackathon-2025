@@ -12,6 +12,7 @@ import {
   StatusBar,
   ScrollView,
 } from 'react-native';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 // Map component placeholder
 const MapView = () => (
@@ -119,7 +120,7 @@ export default function CommunityUpdatesScreen() {
     return (
       <View style={styles.card}>
         <Text style={styles.updateType}>
-          {item.type === 'open_spot' ? '🅿️ Open Spot' : item.type === 'closure' ? '🚧 Closure' : '⚠️ Construction'}
+          {item.type === 'open_spot' ? '🅿 Open Spot' : item.type === 'closure' ? '⊗ Closure' : '⚠︎ Construction'}
         </Text>
         <Text style={styles.updateDescription}>{item.description}</Text>
         <View style={styles.voteContainer}>
@@ -127,13 +128,15 @@ export default function CommunityUpdatesScreen() {
             style={[styles.voteButton, hasVotedUp && styles.upvoted]}
             onPress={() => handleVote(item.id, 'upvote')}
           >
-            <Text style={styles.voteText}>👍 {item.upvotes}</Text>
+            <MaterialIcons name="arrow-circle-up" size={19} color="#f7e2ad" />
+            <Text style={styles.voteText}> {item.upvotes}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.voteButton, hasVotedDown && styles.downvoted]}
             onPress={() => handleVote(item.id, 'downvote')}
           >
-            <Text style={styles.voteText}>👎 {item.downvotes}</Text>
+            <MaterialIcons name="arrow-circle-down" size={19} color="#f7e2ad" />
+            <Text style={styles.voteText}> {item.downvotes}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -147,8 +150,8 @@ export default function CommunityUpdatesScreen() {
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
-        <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
-          <Text style={styles.title}>🗣️ Community Updates</Text>
+        <ScrollView contentContainerStyle={styles.scrollViewContent} showsVerticalScrollIndicator={true}>
+          <Text style={styles.title}>Community Updates</Text>
 
           <MapView />
 
@@ -156,6 +159,7 @@ export default function CommunityUpdatesScreen() {
             data={updates.sort((a, b) => (b.upvotes - b.downvotes) - (a.upvotes - a.downvotes))}
             keyExtractor={item => item.id}
             renderItem={renderUpdateCard}
+            scrollEnabled={false} // Disable FlatList scrolling to allow the parent ScrollView to handle it
           />
 
           <View style={styles.submitForm}>
@@ -208,7 +212,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#000000',
-    padding: 24,
+  },
+  scrollViewContent: {
+    paddingHorizontal: 24,
+    paddingBottom: 40,
   },
   title: {
     fontSize: 32,
@@ -226,6 +233,12 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     borderColor: '#bf8441',
     borderWidth: 1,
+    // Add glow effect
+    shadowColor: '#dea663',
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.5,
+    shadowRadius: 10,
+    elevation: 10,
   },
   mapDisclaimer: {
     fontSize: 12,
@@ -240,9 +253,15 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     borderColor: '#bf8441',
     borderWidth: 1,
+    // Add glow effect
+    shadowColor: '#dea663',
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.5,
+    shadowRadius: 10,
+    elevation: 10,
   },
   updateType: {
-    fontSize: 18,
+    fontSize: 23,
     fontWeight: 'bold',
     color: '#bf8441',
     marginBottom: 8,
@@ -264,6 +283,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
     borderColor: '#bf8441',
     borderWidth: 1,
+    flexDirection: 'row',
   },
   upvoted: {
     borderColor: '#2EC4B6',
@@ -276,6 +296,7 @@ const styles = StyleSheet.create({
   voteText: {
     color: '#f7e2ad',
     fontWeight: 'bold',
+    fontSize: 16,
   },
   submitForm: {
     paddingTop: 20,

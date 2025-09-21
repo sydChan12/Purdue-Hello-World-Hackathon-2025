@@ -10,6 +10,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Alert,
+  StatusBar,
 } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 
@@ -19,16 +20,75 @@ export default function RecommendationScreen({ navigation }) {
   const [showSuggestions, setShowSuggestions] = useState(false);
 
   const buildingOptions = [
-    'Armstrong Hall',
-    'Lawson Computer Science',
-    'Hillenbrand Hall',
-    'Purdue Memorial Union',
-    'Lyles-Porter Hall',
+    '1Bowl',
+    'Aspen Hall',
+    'Aspire',
+    'Bailey Hall',
+    'Batten Hall',
+    'Bechtel Innovation Design Center',
     'Beering Hall',
-    'Wetherill Laboratory',
-    'Neil Armstrong Hall of Engineering',
-    'Stanley Coulter Hall',
+    'Birck Nanotechnology Center',
+    'Boiler Bistro',
+    'Brown Laboratory',
+    'Cary Quadrangle',
+    'Chick-fil-A',
+    'CIVS Building',
+    'Cochran Hall',
+    'Dauch Alumni Center',
+    'Discovery Learning Center',
+    'Earhart Dining Court',
+    'Earhart Hall',
+    'Electrical Engineering Building',
+    'Ford Dining Court',
+    'Forney Hall of Chemical Engineering',
+    'Freshens',
+    'Frieda Parker Hall',
+    'Grissom Hall',
+    'Harrison Hall',
+    'Hawkins Hall',
+    'Hillenbrand Dining Court',
+    'Hillenbrand Hall',
+    'Hilltop Apartments',
+    'Hovde Hall',
+    'Johnson Hall',
+    'Jersey Mike’s',
     'Krannert Building',
+    'Lawson Computer Science',
+    'Lyles-Porter Hall',
+    'Materials and Electrical Engineering Building',
+    'Matthews Hall',
+    'McCutcheon Hall',
+    'Meredith Hall',
+    'Meredith South',
+    'Neil Armstrong Hall of Engineering',
+    'On-the-Go at Earhart',
+    'On-the-Go at Ford',
+    'On-the-Go at Hillenbrand',
+    'On-the-Go at Meredith South',
+    'On-the-Go at Wiley',
+    'On-the-Go at Windsor',
+    'Owen Hall',
+    'Panera Bread',
+    'Pappy’s Sweet Shop',
+    'Pete’s Za',
+    'Pfendler Hall',
+    'Purdue Food Co. Market',
+    'Purdue Memorial Union',
+    'Qdoba',
+    'Recitation Building',
+    'Shreve Hall',
+    'Stanley Coulter Hall',
+    'Starbucks at PMU',
+    'Starbucks at Third Street',
+    'Stewart Center',
+    'Tarkington Hall',
+    'Third Street Suites',
+    'Wetherill Laboratory',
+    'Wiley Dining Court',
+    'Winifred Parker Hall',
+    'Windsor Dining Court',
+    'Windsor Halls',
+    'Young Hall',
   ];
 
   const filteredBuildings = buildingOptions.filter((b) =>
@@ -58,158 +118,167 @@ export default function RecommendationScreen({ navigation }) {
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      style={{ flex: 1 }}
-    >
-      <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-        <Text style={styles.title}>🔍 Find Your Spot</Text>
-        <Text style={styles.subtitle}>Where are you headed?</Text>
+    <>
+      <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        style={{ flex: 1, backgroundColor: '#000000' }}
+      >
+        <ScrollView
+          contentContainerStyle={[styles.container, { backgroundColor: '#000000' }]}
+          keyboardShouldPersistTaps="handled"
+        >
+          <Text style={styles.title}>Find Your Spot</Text>
+          <Text style={styles.subtitle}>Where are you headed?</Text>
 
-        <Text style={styles.label}>🏫 Destination Building</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Start typing..."
-          placeholderTextColor="#888"
-          value={buildingQuery}
-          onChangeText={(text) => {
-            setBuildingQuery(text);
-            setShowSuggestions(true);
-            setSelectedBuilding(null);
-          }}
-          onFocus={() => setShowSuggestions(true)}
-        />
+          <Text style={styles.label}>Destination Building</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Start typing..."
+            placeholderTextColor="#888"
+            value={buildingQuery}
+            onChangeText={(text) => {
+              setBuildingQuery(text);
+              setShowSuggestions(true);
+              setSelectedBuilding(null);
+            }}
+            onFocus={() => setShowSuggestions(true)}
+          />
 
-        {showSuggestions && filteredBuildings.length > 0 && (
-          <View style={styles.suggestionsContainer}>
-            <FlatList
-              data={filteredBuildings}
-              keyExtractor={(item) => item}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={styles.suggestionItem}
-                  onPress={() => {
-                    setBuildingQuery(item);
-                    setSelectedBuilding(item);
-                    setShowSuggestions(false);
-                  }}
-                >
-                  <Text style={styles.suggestionText}>{item}</Text>
-                </TouchableOpacity>
-              )}
+          {showSuggestions && filteredBuildings.length > 0 && (
+            <View style={styles.suggestionsContainer}>
+              <FlatList
+                data={filteredBuildings}
+                keyExtractor={(item) => item}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    style={styles.suggestionItem}
+                    onPress={() => {
+                      setBuildingQuery(item);
+                      setSelectedBuilding(item);
+                      setShowSuggestions(false);
+                    }}
+                  >
+                    <Text style={styles.suggestionText}>{item}</Text>
+                  </TouchableOpacity>
+                )}
+              />
+            </View>
+          )}
+
+          <Text style={styles.label}>Intended Arrival Time</Text>
+          <View style={{ zIndex: 2000 }}>
+            <DropDownPicker
+              open={timeOpen}
+              value={selectedTime}
+              items={timeItems}
+              setOpen={setTimeOpen}
+              setValue={setSelectedTime}
+              setItems={setTimeItems}
+              placeholder="Select a time"
+              style={styles.dropdown}
+              textStyle={styles.dropdownText}
+              dropDownContainerStyle={styles.dropdownContainer}
             />
           </View>
-        )}
 
-        <Text style={styles.label}>⏰ Intended Arrival Time</Text>
-        <View style={{ zIndex: 2000 }}>
-          <DropDownPicker
-            open={timeOpen}
-            value={selectedTime}
-            items={timeItems}
-            setOpen={setTimeOpen}
-            setValue={setSelectedTime}
-            setItems={setTimeItems}
-            placeholder="Select a time"
-            style={styles.dropdown}
-            textStyle={styles.dropdownText}
-            dropDownContainerStyle={styles.dropdownContainer}
-          />
-        </View>
+          <View style={{ height: timeOpen ? 200 : 0 }} />
 
-        <View style={{ height: timeOpen ? 200 : 0 }} />
+          <TouchableOpacity style={styles.button} onPress={handleRecommendation}>
+            <Text style={styles.buttonText}>Find My Spot</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity style={styles.button} onPress={handleRecommendation}>
-          <Text style={styles.buttonText}>🚗 Find My Spot</Text>
-        </TouchableOpacity>
-
-        <Text style={styles.link} onPress={() => navigation.navigate('Upcoming Events')}>
-          🗓️ Upcoming Events
-        </Text>
-      </ScrollView>
-    </KeyboardAvoidingView>
+          <Text style={styles.link} onPress={() => navigation.navigate('Upcoming Events')}>
+            🗓️ Upcoming Events
+          </Text>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     padding: 24,
-    backgroundColor: '#1C1C1E',
     flexGrow: 1,
+    backgroundColor: '#000000',
   },
   title: {
-    fontSize: 28,
+    fontSize: 36,
     fontWeight: 'bold',
-    color: '#A259FF',
-    marginBottom: 10,
+    color: '#dea663',
     textAlign: 'center',
+    marginBottom: 10,
   },
   subtitle: {
     fontSize: 16,
-    color: '#F7F7F7',
+    color: '#bf8441',
     marginBottom: 20,
     textAlign: 'center',
   },
   label: {
-    color: '#F7F7F7',
+    color: '#f7e2ad',
     fontSize: 14,
     marginBottom: 6,
     marginLeft: 4,
   },
   input: {
-    backgroundColor: '#2C2C2E',
-    color: '#F7F7F7',
+    backgroundColor: '#1a1a1a',
+    color: '#f7e2ad',
     padding: 14,
     borderRadius: 12,
     marginBottom: 8,
     fontSize: 16,
+    borderColor: '#bf8441',
+    borderWidth: 1,
   },
   suggestionsContainer: {
-    backgroundColor: '#2C2C2E',
+    backgroundColor: '#1a1a1a',
     borderRadius: 12,
-    borderColor: '#444',
+    borderColor: '#bf8441',
     borderWidth: 1,
     maxHeight: 150,
     marginBottom: 16,
   },
   suggestionItem: {
     padding: 12,
-    borderBottomColor: '#444',
+    borderBottomColor: '#bf8441',
     borderBottomWidth: 1,
   },
   suggestionText: {
-    color: '#F7F7F7',
+    color: '#f7e2ad',
     fontSize: 16,
   },
   dropdown: {
-    backgroundColor: '#2C2C2E',
-    borderColor: '#444',
-    marginBottom: 16,
+    backgroundColor: '#1a1a1a',
+    borderColor: '#bf8441',
     borderRadius: 12,
   },
   dropdownText: {
-    color: '#F7F7F7',
+    color: '#f7e2ad',
     fontSize: 16,
   },
   dropdownContainer: {
-    backgroundColor: '#2C2C2E',
-    borderColor: '#444',
+    backgroundColor: '#1a1a1a',
+    borderColor: '#bf8441',
   },
   button: {
-    backgroundColor: '#2EC4B6',
-    paddingVertical: 14,
-    borderRadius: 14,
+    backgroundColor: '#bf8441',
+    paddingVertical: 15,
+    paddingHorizontal: 60,
+    borderRadius: 30,
+    elevation: 2,
     alignItems: 'center',
     marginTop: 20,
   },
   buttonText: {
-    color: '#1C1C1E',
+    color: '#000000',
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: '600',
   },
   link: {
     marginTop: 30,
-    color: '#FF6B6B',
+    color: '#dea663',
     textAlign: 'center',
     fontSize: 16,
     textDecorationLine: 'underline',

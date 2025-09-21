@@ -1,28 +1,28 @@
-# Purdue-Hello-World-Hackathon-2025
-# # Inspiration
+# Purdue Hello World Hackathon 2025; BoilerRoute
+# Inspiration
 
 The inspiration for this project comes from our desire to solve a common and frustrating problem at Purdue University: finding parking. The goal was to create a seamless and safer experience for the entire community. Anyone who has driven around campus knows how difficult it can be to find an available spot, especially at peak times and during on campus events. BoilerRoute was developed as a solution to this daily frustration, aiming to provide real-time guidance and a community-driven platform, working to eliminate the parking hassle.
 
-# # What it does
+# What it does
 
 BoilerRoute is a mobile application designed to simplify the parking experience for Purdue students, faculty, and visitors. It addresses the core problem by providing intelligent parking recommendations based on a user's selected building destination and desired arrival time. The app presents a list of nearby garages, showing their distance from the desired destination, the number of available spots, and whether the parking garage or lot is full. A key feature is the "Display on Map" functionality, which generates a clear, interactive map showing a driving route from the chosen building to any of the recommended nearest parking. This helps users visualize their path and navigate with ease. Furthermore, our Upcoming Events page allows the user to see future impacted areas where parking will be affected on campus due to Purdue on campus events. Additionally, the app includes a Community Updates section where users can contribute real-time information about parking conditions and upvote and downvote other people's posts to ensure the most credible is at the top, a feature that enhances the user-driven aspect of our solution.
 
-# # How we built it
+# How we built it
 
 The app was primarily built using React Native, which allowed for cross-platform development on both iOS and Android. The core of the application relies on data for garage and building locations, as well as their distances, which were compiled to create a functional prototype. We utilized the react-native-maps library to power the interactive map, enabling us to display custom markers for both parking garages and destinations. The react-native-vector-icons library was used to add a touch of visual branding with emojis, such as the parking symbol. State management with React's useState and useEffect hooks was crucial for handling user inputs, dynamically updating the list of recommended garages, and controlling the visibility of the map modal. The community updates feature was implemented by managing a list of posts in the app's state, which is then sorted based on upvote counts.
 
-# # Challenges we ran into
+# Challenges we ran into
 
 One of the primary challenges was the lack of a real-time data source for Purdue's parking garages. Since an official Purdue API for parking availability was not accessible, we had to rely on a hardcoded, simulated dataset. This limitation prevents the app from providing truly live information, a key component of its value proposition. Another significant challenge was accurately implementing the "Display on Map" feature. Initially, we faced issues with incorrect coordinates and map display, which caused the map markers to appear in the wrong locations or the route polyline to fail in some cases. We had to meticulously debug and correct these latitude and longitude values to ensure the map functionality was precise and reliable even without the use of live data.
 
-# # Accomplishments that we're proud of
+# Accomplishments that we're proud of
 
 We are proud of several key accomplishments, including successfully creating a functional and visually appealing prototype that effectively demonstrates the app's core features. The user interface, with its clean dark and gold theme and custom color palette in the Purdue colors, and the addition of our animated logo and slight glow from displayed features, provides an intuitive and modern user experience. We are also particularly proud of the Community Updates feature. Although a simple posting system, it creates a dynamic, user-driven platform that could be incredibly valuable for crowdsourcing real-time information by allowing users to drop pins of parking locations around campus that are impacted. Finally, successfully integrating the map functionality on both the Community Updates and Get a Recommendation pages, including making the map interactive using the markers and line, was a significant technical achievement that enhanced the app's primary function and made it clear and easy to use.
 
-# # What we learned
+# What we learned
 
 Through this project, we learned about the importance of data dependency in building utility-focused applications. We recognized that while a well-designed front-end is essential, the real power of an app like BoilerRoute lies in its ability to access and process live data. This taught us to prioritize data acquisition and API integration in future projects. We also gained valuable experience in debugging and refining complex components, particularly with map-based UIs and dynamic lists. This project reinforced our value of a user-centric design approach, as every feature was developed with the goal of solving a genuine problem for our target audience.
 
-# # What's next for Boiler Route
+# What's next for Boiler Route
 
 The next steps for Boiler Route involve moving beyond the prototype phase to create a more robust and feature-rich application. The most critical next step is to secure a live data feed for Purdue's parking garages, which would make the app's recommendations truly accurate and real-time. We also plan to implement user authentication, allowing users to save their favorite destinations and contribute more effectively to the community updates. Adding push notifications for critical parking alerts or traffic updates would also greatly enhance the app's utility. Ultimately, we envision Boiler Route evolving into a comprehensive campus navigation tool, integrating real-time bus routes, bike-share locations, and more to serve as a one-stop-shop for all Purdue campus transportation needs. In the future, we were also considering adding a Theft Notification feature allowing users to be more cautious and to be on the lookout in certain areas.

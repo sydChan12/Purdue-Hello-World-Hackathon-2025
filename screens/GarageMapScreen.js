@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Modal } from 'react-native';
 import MapView, { Marker, Polyline, Callout } from 'react-native-maps';
 
-// Hardcoded distances and addresses for garages
+// distances and addresses for garages
 const distanceLookup = {
   '1Bowl': { 'McCutcheon Lot': 0.2, 'Harrison Street Garage': 0.25, 'Union Club Parking Garage': 0.3 },
   'Aspen Hall': { 'Wiley Lot': 0.1, 'Civic Garage': 0.25, 'Purdue West Lot': 0.3 },
@@ -75,7 +75,7 @@ const distanceLookup = {
   'Young Hall': { 'Grant Street Garage': 0.1, 'Union Club Parking Garage': 0.1, 'PMU Surface Lots': 0.1 },
 };
 
-// Corrected garage coordinates
+// garage coordinates
 const garageLocations = {
   'Grant Street Garage': { address: '101 N Grant St, West Lafayette, IN 47906', lat: 40.4258, lng: -86.9118 },
   'University Street Garage': { address: '201 S University St, West Lafayette, IN 47906', lat: 40.4248, lng: -86.9126 },
@@ -92,7 +92,7 @@ const garageLocations = {
   'PMU Surface Lots': { address: '101 N Grant St, West Lafayette, IN 47906', lat: 40.4240, lng: -86.9120 },
 };
 
-// Corrected building coordinates
+// building coordinates
 const buildingLocations = {
   '1Bowl': { lat: 40.4295, lng: -86.9205 },
   'Aspen Hall': { lat: 40.4228, lng: -86.9143 },

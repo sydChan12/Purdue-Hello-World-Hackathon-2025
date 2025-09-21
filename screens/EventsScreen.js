@@ -71,6 +71,7 @@ export default function EventsScreen() {
           data={eventsData}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => <EventCard event={item} />}
+          scrollEnabled={false} // Disable FlatList scrolling to allow the parent ScrollView to handle it
         />
       </ScrollView>
     </>
@@ -97,6 +98,12 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     borderColor: '#bf8441',
     borderWidth: 1,
+    // Add the glow effect here
+    shadowColor: '#dea663',
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.5,
+    shadowRadius: 10,
+    elevation: 10,
   },
   eventName: {
     fontSize: 20,

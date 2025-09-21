@@ -173,8 +173,8 @@ const styles = StyleSheet.create({
   },
   glowWrapper: {
     position: 'absolute',
-    width: 155,
-    height: 155,
+    width: 165,
+    height: 165,
     justifyContent: 'center',
     alignItems: 'center',
     // Add glow effect here
@@ -186,29 +186,29 @@ const styles = StyleSheet.create({
   },
   glowBorder: {
     position: 'absolute',
-    width: 155,
-    height: 155,
+    width: 165,
+    height: 165,
     borderRadius: 65,
     borderWidth: 4,
     borderColor: 'transparent',
     zIndex: -1,
   },
   logoWrapper: {
-    height: 155,
+    height: 165,
     justifyContent: 'center',
     alignItems: 'center',
   },
   logoContainer: {
-    width: 155,
-    height: 155,
+    width: 165,
+    height: 165,
     position: 'relative',
     justifyContent: 'center',
     alignItems: 'center',
   },
   square: {
     position: 'absolute',
-    width: 135,
-    height: 135,
+    width: 145,
+    height: 145,
     borderRadius: 12,
     overflow: 'hidden',
   },
@@ -248,8 +248,8 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   glowingImage: {
-    width: 125,
-    height: 125,
+    width: 135,
+    height: 135,
     position: 'absolute',
     borderRadius: 20,
     // iOS shadow properties

@@ -13,15 +13,102 @@ import {
   ScrollView,
 } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import MapView, { Marker, Callout } from 'react-native-maps';
 
-// Map component placeholder
-const MapView = () => (
-  <View style={styles.mapContainer}>
-    <Text style={styles.mapDisclaimer}>
-      Note: This is a placeholder for a real map. For this feature to work, you would need to install a library like 'react-native-maps'.
-    </Text>
-  </View>
-);
+// Hardcoded data for Purdue parking locations
+const parkingLocations = [
+  {
+    id: '1',
+    name: 'Grant Street Garage',
+    coordinate: { latitude: 40.4258, longitude: -86.9118 },
+    totalSpots: 620,
+    occupiedSpots: 480,
+  },
+  {
+    id: '2',
+    name: 'University Street Garage',
+    coordinate: { latitude: 40.4248, longitude: -86.9126 },
+    totalSpots: 500,
+    occupiedSpots: 500,
+  },
+  {
+    id: '3',
+    name: 'Wood Street Garage',
+    coordinate: { latitude: 40.4285, longitude: -86.9201 },
+    totalSpots: 400,
+    occupiedSpots: 300,
+  },
+  {
+    id: '4',
+    name: 'Northwestern Garage',
+    coordinate: { latitude: 40.4299, longitude: -86.9189 },
+    totalSpots: 300,
+    occupiedSpots: 300,
+  },
+  {
+    id: '5',
+    name: 'Union Club Parking Garage',
+    coordinate: { latitude: 40.4245, longitude: -86.9112 },
+    totalSpots: 300,
+    occupiedSpots: 300,
+  },
+  {
+    id: '6',
+    name: 'McCutcheon Lot',
+    coordinate: { latitude: 40.4225, longitude: -86.9185 },
+    totalSpots: 200,
+    occupiedSpots: 85,
+  },
+  {
+    id: '7',
+    name: 'Harrison Street Garage',
+    coordinate: { latitude: 40.4223, longitude: -86.9215 },
+    totalSpots: 450,
+    occupiedSpots: 300,
+  },
+  {
+    id: '8',
+    name: 'Wiley Lot',
+    coordinate: { latitude: 40.4278, longitude: -86.9255 },
+    totalSpots: 180,
+    occupiedSpots: 70,
+  },
+  {
+    id: '9',
+    name: 'Civic Garage',
+    coordinate: { latitude: 40.4293, longitude: -86.9157 },
+    totalSpots: 150,
+    occupiedSpots: 40,
+  },
+  {
+    id: '10',
+    name: 'Discovery Park District Garage',
+    coordinate: { latitude: 40.4265, longitude: -86.9304 },
+    totalSpots: 300,
+    occupiedSpots: 215,
+  },
+  {
+    id: '11',
+    name: 'Third Street Garage',
+    coordinate: { latitude: 40.4290, longitude: -86.9230 },
+    totalSpots: 300,
+    occupiedSpots: 255,
+  },
+  {
+    id: '12',
+    name: 'Purdue West Lot',
+    coordinate: { latitude: 40.4300, longitude: -86.9250 },
+    totalSpots: 250,
+    occupiedSpots: 165,
+  },
+  {
+    id: '13',
+    name: 'PMU Surface Lots',
+    coordinate: { latitude: 40.4240, longitude: -86.9120 },
+    totalSpots: 100,
+    occupiedSpots: 75,
+  },
+];
 
 export default function CommunityUpdatesScreen() {
   const [updates, setUpdates] = useState([
@@ -52,17 +139,18 @@ export default function CommunityUpdatesScreen() {
   const [location, setLocation] = useState(null);
   const [userVotes, setUserVotes] = useState({});
 
-  const dropPin = () => {
+  const handleMapPress = (e) => {
+    setLocation(e.nativeEvent.coordinate);
     Alert.alert(
-      'Drop a Pin',
-      'This feature would allow you to select a location on the map to report an issue. For this prototype, a mock location has been set.',
-      [{ text: 'OK', onPress: () => setLocation({ latitude: 40.4287, longitude: -86.9137 }) }]
+      'Pin Dropped!',
+      'You have successfully marked a location. Please provide a description and submit your update.',
+      [{ text: 'OK' }]
     );
   };
 
   const submitUpdate = () => {
     if (!newUpdateDescription || !location) {
-      Alert.alert('Missing Info', 'Please provide a description and location.');
+      Alert.alert('Missing Info', 'Please provide a description and long-press the map to set a location.');
       return;
     }
 
@@ -85,27 +173,35 @@ export default function CommunityUpdatesScreen() {
     setUpdates(prev =>
       prev.map(update => {
         if (update.id === updateId) {
-          if (userVotes[updateId] === voteType) {
-            setUserVotes(prevVotes => ({ ...prevVotes, [updateId]: null }));
-            return {
-              ...update,
-              upvotes: voteType === 'upvote' ? update.upvotes - 1 : update.upvotes,
-              downvotes: voteType === 'downvote' ? update.downvotes - 1 : update.downvotes,
-            };
-          } else if (userVotes[updateId]) {
-            setUserVotes(prevVotes => ({ ...prevVotes, [updateId]: voteType }));
-            return {
-              ...update,
-              upvotes: voteType === 'upvote' ? update.upvotes + 1 : update.upvotes - 1,
-              downvotes: voteType === 'downvote' ? update.downvotes + 1 : update.downvotes - 1,
-            };
-          } else {
-            setUserVotes(prevVotes => ({ ...prevVotes, [updateId]: voteType }));
-            return {
-              ...update,
-              upvotes: voteType === 'upvote' ? update.upvotes + 1 : update.upvotes,
-              downvotes: voteType === 'downvote' ? update.downvotes + 1 : update.downvotes,
-            };
+          const hasVotedUp = userVotes[updateId] === 'upvote';
+          const hasVotedDown = userVotes[updateId] === 'downvote';
+
+          if (voteType === 'upvote') {
+            if (hasVotedUp) {
+              setUserVotes(prevVotes => ({ ...prevVotes, [updateId]: null }));
+              return { ...update, upvotes: Math.max(0, update.upvotes - 1) };
+            } else {
+              setUserVotes(prevVotes => ({ ...prevVotes, [updateId]: 'upvote' }));
+              return {
+                ...update,
+                upvotes: update.upvotes + 1,
+                downvotes: hasVotedDown ? Math.max(0, update.downvotes - 1) : update.downvotes,
+              };
+            }
+          }
+
+          if (voteType === 'downvote') {
+            if (hasVotedDown) {
+              setUserVotes(prevVotes => ({ ...prevVotes, [updateId]: null }));
+              return { ...update, downvotes: Math.max(0, update.downvotes - 1) };
+            } else {
+              setUserVotes(prevVotes => ({ ...prevVotes, [updateId]: 'downvote' }));
+              return {
+                ...update,
+                upvotes: hasVotedUp ? Math.max(0, update.upvotes - 1) : update.upvotes,
+                downvotes: update.downvotes + 1,
+              };
+            }
           }
         }
         return update;
@@ -128,15 +224,15 @@ export default function CommunityUpdatesScreen() {
             style={[styles.voteButton, hasVotedUp && styles.upvoted]}
             onPress={() => handleVote(item.id, 'upvote')}
           >
-            <MaterialIcons name="arrow-circle-up" size={19} color="#f7e2ad" />
-            <Text style={styles.voteText}> {item.upvotes}</Text>
+            <MaterialIcons name="arrow-circle-up" size={19} color={hasVotedUp ? '#2EC4B6' : '#f7e2ad'} />
+            <Text style={[styles.voteText, hasVotedUp && { color: '#2EC4B6' }]}> {item.upvotes}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.voteButton, hasVotedDown && styles.downvoted]}
             onPress={() => handleVote(item.id, 'downvote')}
           >
-            <MaterialIcons name="arrow-circle-down" size={19} color="#f7e2ad" />
-            <Text style={styles.voteText}> {item.downvotes}</Text>
+            <MaterialIcons name="arrow-circle-down" size={19} color={hasVotedDown ? '#FF6B6B' : '#f7e2ad'} />
+            <Text style={[styles.voteText, hasVotedDown && { color: '#FF6B6B' }]}> {item.downvotes}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -153,13 +249,54 @@ export default function CommunityUpdatesScreen() {
         <ScrollView contentContainerStyle={styles.scrollViewContent} showsVerticalScrollIndicator={true}>
           <Text style={styles.title}>Community Updates</Text>
 
-          <MapView />
+          <MapView
+            style={styles.mapContainer}
+            initialRegion={{
+              latitude: 40.4258,
+              longitude: -86.9137,
+              latitudeDelta: 0.025,
+              longitudeDelta: 0.025,
+            }}
+            showsUserLocation={false}
+            onLongPress={handleMapPress}
+          >
+            {parkingLocations.map((location) => (
+              <Marker
+                key={location.id}
+                coordinate={location.coordinate}
+              >
+                <Callout tooltip>
+                  <View style={styles.calloutContainer}>
+                    <Text style={styles.calloutTitle}>{location.name}</Text>
+                    <Text style={styles.calloutText}>
+                      Occupied: {location.occupiedSpots}/{location.totalSpots}
+                    </Text>
+                    <Text style={[styles.calloutText, {
+                      color: location.totalSpots - location.occupiedSpots > 0 ? '#2EC4B6' : '#FF6B6B',
+                      fontWeight: 'bold',
+                    }]}>
+                      {location.totalSpots - location.occupiedSpots > 0
+                        ? `${location.totalSpots - location.occupiedSpots} spots open`
+                        : 'Full'}
+                    </Text>
+                  </View>
+                </Callout>
+              </Marker>
+            ))}
 
+            {location && (
+              <Marker
+                coordinate={location}
+                pinColor="#dea663" // Changed pin color
+              />
+            )}
+          </MapView>
+          
           <FlatList
             data={updates.sort((a, b) => (b.upvotes - b.downvotes) - (a.upvotes - a.downvotes))}
             keyExtractor={item => item.id}
             renderItem={renderUpdateCard}
-            scrollEnabled={false} // Disable FlatList scrolling to allow the parent ScrollView to handle it
+            scrollEnabled={false}
           />
 
           <View style={styles.submitForm}>
@@ -194,10 +331,6 @@ export default function CommunityUpdatesScreen() {
               multiline
             />
 
-            <TouchableOpacity style={styles.dropPinButton} onPress={dropPin}>
-              <Text style={styles.dropPinButtonText}>Drop a Pin on the Map</Text>
-            </TouchableOpacity>
-
             <TouchableOpacity style={styles.submitButton} onPress={submitUpdate}>
               <Text style={styles.submitButtonText}>Submit Update</Text>
             </TouchableOpacity>
@@ -226,25 +359,16 @@ const styles = StyleSheet.create({
   },
   mapContainer: {
     backgroundColor: '#1a1a1a',
-    height: 200,
+    height: 300,
     borderRadius: 14,
-    justifyContent: 'center',
-    alignItems: 'center',
     marginBottom: 20,
     borderColor: '#bf8441',
     borderWidth: 1,
-    // Add glow effect
     shadowColor: '#dea663',
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.5,
     shadowRadius: 10,
     elevation: 10,
-  },
-  mapDisclaimer: {
-    fontSize: 12,
-    color: '#f7e2ad',
-    textAlign: 'center',
-    padding: 10,
   },
   card: {
     backgroundColor: '#1a1a1a',
@@ -253,7 +377,6 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     borderColor: '#bf8441',
     borderWidth: 1,
-    // Add glow effect
     shadowColor: '#dea663',
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.5,
@@ -340,17 +463,6 @@ const styles = StyleSheet.create({
     borderColor: '#bf8441',
     borderWidth: 1,
   },
-  dropPinButton: {
-    backgroundColor: '#FF6B6B',
-    padding: 14,
-    borderRadius: 14,
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  dropPinButtonText: {
-    color: '#000000',
-    fontWeight: 'bold',
-  },
   submitButton: {
     backgroundColor: '#bf8441',
     padding: 14,
@@ -360,5 +472,28 @@ const styles = StyleSheet.create({
   submitButtonText: {
     color: '#000000',
     fontWeight: 'bold',
+  },
+  calloutContainer: {
+    flex: 1,
+    backgroundColor: '#1a1a1a',
+    borderRadius: 10,
+    padding: 10,
+    borderColor: '#bf8441',
+    borderWidth: 1,
+    shadowColor: '#dea663',
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.5,
+    shadowRadius: 10,
+    elevation: 10,
+  },
+  calloutTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#f7e2ad',
+    marginBottom: 5,
+  },
+  calloutText: {
+    fontSize: 12,
+    color: '#cccccc',
   },
 });

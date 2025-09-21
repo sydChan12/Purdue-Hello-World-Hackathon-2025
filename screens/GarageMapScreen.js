@@ -8,22 +8,12 @@ const distanceLookup = {
     'Harrison Street Garage': 0.25,
     'Union Club Parking Garage': 0.3,
   },
-  'Aspen Hall': {
-    'Wiley Lot': 0.1,
-    'Civic Garage': 0.25,
-    'Purdue West Lot': 0.3,
-  },
   'Aspire': {
     'Discovery Park Garage': 0.1,
     'Harrison Street Garage': 0.2,
     'McCutcheon Lot': 0.3,
   },
   'Bailey Hall': {
-    'Third Street Garage': 0.2,
-    'Wood Street Garage': 0.25,
-    'Wiley Lot': 0.3,
-  },
-  'Batten Hall': {
     'Third Street Garage': 0.2,
     'Wood Street Garage': 0.25,
     'Wiley Lot': 0.3,

@@ -20,9 +20,9 @@ export default function App() {
         initialRouteName="Intro"
         screenOptions={{
           headerStyle: {
-            backgroundColor: '#000000', // Matches your black background
+            backgroundColor: '#000000', // Matches our black background
           },
-          headerTintColor: '#dea663', // A gold color for the back button and text
+          headerTintColor: '#dea663', // A gold color for our back button and text
           headerTitleStyle: {
             fontWeight: 'bold',
           },

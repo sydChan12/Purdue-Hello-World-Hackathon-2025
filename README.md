@@ -1,4 +1,4 @@
-# Purdue Hello World Hackathon 2025; BoilerRoute
+# Purdue Hello World Hackathon 2025: BoilerRoute
 # Inspiration
 
 The inspiration for this project comes from our desire to solve a common and frustrating problem at Purdue University: finding parking. The goal was to create a seamless and safer experience for the entire community. Anyone who has driven around campus knows how difficult it can be to find an available spot, especially at peak times and during on campus events. BoilerRoute was developed as a solution to this daily frustration, aiming to provide real-time guidance and a community-driven platform, working to eliminate the parking hassle.

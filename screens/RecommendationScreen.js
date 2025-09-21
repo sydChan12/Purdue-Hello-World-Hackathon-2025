@@ -1,3 +1,5 @@
+// File: RecommendationScreen.js
+
 import React, { useState } from 'react';
 import {
   View,
@@ -20,6 +22,7 @@ export default function RecommendationScreen({ navigation }) {
   const [showSuggestions, setShowSuggestions] = useState(false);
 
   const buildingOptions = [
+    // ... (rest of your buildingOptions array)
     '1Bowl',
     'Aspen Hall',
     'Aspire',
@@ -98,16 +101,22 @@ export default function RecommendationScreen({ navigation }) {
   const [timeOpen, setTimeOpen] = useState(false);
   const [selectedTime, setSelectedTime] = useState(null);
   const [timeItems, setTimeItems] = useState([
+    { label: '7:00 AM', value: '7am' },
     { label: '8:00 AM', value: '8am' },
     { label: '9:00 AM', value: '9am' },
     { label: '10:00 AM', value: '10am' },
+    { label: '11:00 AM', value: '11am' },
     { label: '12:00 PM', value: '12pm' },
+    { label: '1:00 PM', value: '1pm' },
+    { label: '2:00 PM', value: '2pm' },
     { label: '3:00 PM', value: '3pm' },
+    { label: '4:00 PM', value: '4pm' },
     { label: '5:00 PM', value: '5pm' },
   ]);
 
   const handleRecommendation = () => {
     if (selectedBuilding && selectedTime) {
+      // Navigate to the Garage Dashboard screen, passing the selected data
       navigation.navigate('Garage Dashboard', {
         selectedBuilding,
         selectedTime,

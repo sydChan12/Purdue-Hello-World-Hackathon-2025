@@ -1,8 +1,16 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, FlatList, Alert, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  Alert,
+  TouchableOpacity,
+  StatusBar,
+  ScrollView,
+} from 'react-native';
 
 export default function SavedGaragesScreen() {
-  // Using local state to manage saved garages
   const [savedGarages, setSavedGarages] = useState([
     'Grant Street Garage',
     'University Street Garage',
@@ -10,82 +18,120 @@ export default function SavedGaragesScreen() {
     'Northwestern Garage',
   ]);
 
+  const allGarages = [
+    { name: 'Grant Street Garage', occupiedSpots: 480, totalSpots: 620 },
+    { name: 'University Street Garage', occupiedSpots: 500, totalSpots: 500 },
+    { name: 'Wood Street Garage', occupiedSpots: 300, totalSpots: 400 },
+    { name: 'Northwestern Garage', occupiedSpots: 300, totalSpots: 300 },
+    { name: 'Union Club Parking Garage', occupiedSpots: 300, totalSpots: 300 },
+    { name: 'McCutcheon Lot', occupiedSpots: 85, totalSpots: 200 },
+    { name: 'Harrison Street Garage', occupiedSpots: 300, totalSpots: 450 },
+    { name: 'Wiley Lot', occupiedSpots: 70, totalSpots: 180 },
+    { name: 'Civic Garage', occupiedSpots: 40, totalSpots: 150 },
+    { name: 'Discovery Park Garage', occupiedSpots: 215, totalSpots: 300 },
+    { name: 'Third Street Garage', occupiedSpots: 255, totalSpots: 300 },
+    { name: 'Purdue West Lot', occupiedSpots: 165, totalSpots: 250 },
+    { name: 'PMU Surface Lots (A/B/C zones)', occupiedSpots: 75, totalSpots: 100 },
+  ];
+
   const removeGarage = (garageName) => {
-    // Filter the savedGarages array to remove the specified garage
-    const updatedGarages = savedGarages.filter(
-      (name) => name !== garageName
-    );
+    const updatedGarages = savedGarages.filter((name) => name !== garageName);
     setSavedGarages(updatedGarages);
-    Alert.alert("Removed", `${garageName} has been removed from your saved list.`);
+    Alert.alert('Removed', `${garageName} has been removed from your saved list.`);
   };
 
-  const renderGarageCard = (item) => {
-    // This is a placeholder for real-time data
-    const garages = [
-      { name: 'Grant Street Garage', occupiedSpots: 480, totalSpots: 620 },
-      { name: 'University Street Garage', occupiedSpots: 500, totalSpots: 500 },
-      { name: 'Wood Street Garage', occupiedSpots: 300, totalSpots: 400 },
-      { name: 'Northwestern Garage', occupiedSpots: 300, totalSpots: 300 },
-    ];
-    const garage = garages.find((g) => g.name === item) || { occupiedSpots: 0, totalSpots: 0 };
+  const addGarage = (garageName) => {
+    if (!savedGarages.includes(garageName)) {
+      setSavedGarages([...savedGarages, garageName]);
+      Alert.alert('Added', `${garageName} has been added to your saved list.`);
+    }
+  };
+
+  const renderGarageCard = (garage, isSaved) => {
     const availableSpots = garage.totalSpots - garage.occupiedSpots;
     const isFull = availableSpots <= 0;
 
     return (
-      <View style={styles.card}>
+      <View key={garage.name} style={styles.card}>
         <View style={styles.cardHeader}>
           <Text style={styles.garageName}>{garage.name}</Text>
-          <TouchableOpacity onPress={() => removeGarage(garage.name)}>
-            <Text style={styles.removeButton}>- Remove</Text>
-          </TouchableOpacity>
+          {isSaved ? (
+            <TouchableOpacity onPress={() => removeGarage(garage.name)}>
+              <Text style={styles.removeButton}>− Remove</Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity onPress={() => addGarage(garage.name)}>
+              <Text style={styles.addButtonText}>➕ Add</Text>
+            </TouchableOpacity>
+          )}
         </View>
         <Text style={styles.detail}>
           🅿️ {garage.occupiedSpots}/{garage.totalSpots} occupied
         </Text>
         <Text style={[styles.status, { color: isFull ? '#FF6B6B' : '#2EC4B6' }]}>
-          {isFull ? '❌ Full' : `✅ ${availableSpots} spots open`}
+          {isFull ? 'Full' : `${availableSpots} spots open`}
         </Text>
       </View>
     );
   };
 
+  const saved = allGarages.filter((g) => savedGarages.includes(g.name));
+  const unsaved = allGarages.filter((g) => !savedGarages.includes(g.name));
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>⭐ My Saved Garages</Text>
-      <Text style={styles.subtitle}>
-        Real-time availability for your preferred parking locations.
-      </Text>
-      {savedGarages.length > 0 ? (
-        <FlatList
-          data={savedGarages}
-          keyExtractor={(item) => item}
-          renderItem={({ item }) => renderGarageCard(item)}
-        />
-      ) : (
-        <Text style={styles.noSavedText}>You have no saved garages yet.</Text>
-      )}
-    </View>
+    <>
+      <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
+      <ScrollView contentContainerStyle={styles.container}>
+        <Text style={styles.title}>My Saved Garages</Text>
+        <Text style={styles.subtitle}>
+          Real-time availability for your preferred parking locations.
+        </Text>
+
+        {saved.length > 0 ? (
+          <>
+            <Text style={styles.sectionTitle}>✅ Saved Garages</Text>
+            {saved.map((garage) => renderGarageCard(garage, true))}
+          </>
+        ) : (
+          <Text style={styles.noSavedText}>You have no saved garages yet.</Text>
+        )}
+
+        {unsaved.length > 0 && (
+          <>
+            <Text style={styles.sectionTitle}>📍 Other Garages</Text>
+            {unsaved.map((garage) => renderGarageCard(garage, false))}
+          </>
+        )}
+      </ScrollView>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#1C1C1E',
+    backgroundColor: '#000000',
     padding: 24,
+    flexGrow: 1,
   },
   title: {
-    fontSize: 26,
+    fontSize: 32,
     fontWeight: 'bold',
-    color: '#A259FF',
-    marginBottom: 8,
+    color: '#dea663',
     textAlign: 'center',
+    marginBottom: 10,
   },
   subtitle: {
     fontSize: 16,
-    color: '#F7F7F7',
+    color: '#bf8441',
     marginBottom: 20,
     textAlign: 'center',
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#f7e2ad',
+    marginBottom: 10,
+    marginTop: 20,
   },
   noSavedText: {
     fontSize: 16,
@@ -94,10 +140,12 @@ const styles = StyleSheet.create({
     marginTop: 40,
   },
   card: {
-    backgroundColor: '#2C2C2E',
+    backgroundColor: '#1a1a1a',
     borderRadius: 14,
     padding: 16,
     marginBottom: 16,
+    borderColor: '#bf8441',
+    borderWidth: 1,
   },
   cardHeader: {
     flexDirection: 'row',
@@ -107,16 +155,22 @@ const styles = StyleSheet.create({
   garageName: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#F7F7F7',
+    color: '#f7e2ad',
     marginBottom: 6,
   },
   removeButton: {
     color: '#FF6B6B',
     fontWeight: 'bold',
+    fontSize: 14,
+  },
+  addButtonText: {
+    color: '#2EC4B6',
+    fontWeight: 'bold',
+    fontSize: 14,
   },
   detail: {
     fontSize: 14,
-    color: '#CCCCCC',
+    color: '#cccccc',
     marginBottom: 4,
   },
   status: {

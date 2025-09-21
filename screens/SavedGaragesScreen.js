@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -18,7 +18,7 @@ export default function SavedGaragesScreen() {
     'Northwestern Garage',
   ]);
 
-  const allGarages = [
+  const [allGarages, setAllGarages] = useState([
     { name: 'Grant Street Garage', occupiedSpots: 480, totalSpots: 620 },
     { name: 'University Street Garage', occupiedSpots: 500, totalSpots: 500 },
     { name: 'Wood Street Garage', occupiedSpots: 300, totalSpots: 400 },
@@ -31,8 +31,42 @@ export default function SavedGaragesScreen() {
     { name: 'Discovery Park Garage', occupiedSpots: 215, totalSpots: 300 },
     { name: 'Third Street Garage', occupiedSpots: 255, totalSpots: 300 },
     { name: 'Purdue West Lot', occupiedSpots: 165, totalSpots: 250 },
-    { name: 'PMU Surface Lots (A/B/C zones)', occupiedSpots: 75, totalSpots: 100 },
-  ];
+    { name: 'PMU Surface Lots', occupiedSpots: 75, totalSpots: 100 },
+  ]);
+
+  const checkIfPeakTime = () => {
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+    return (currentHour === 11 && currentMinute >= 30) || (currentHour === 12) || (currentHour === 13 && currentMinute <= 30);
+  };
+
+  const updateGarageData = (garageName) => {
+    setAllGarages(prevGarages => {
+      return prevGarages.map(garage => {
+        if (garage.name === garageName) {
+          const change = Math.floor(Math.random() * (checkIfPeakTime() ? 8 : 4)) - 2;
+          const newOccupiedSpots = Math.max(0, Math.min(garage.totalSpots, garage.occupiedSpots + change));
+          return { ...garage, occupiedSpots: newOccupiedSpots };
+        }
+        return garage;
+      });
+    });
+  };
+
+  useEffect(() => {
+    const intervals = allGarages.map(garage => {
+      // Create a random offset (0 to 1000ms) for each garage
+      const offset = Math.random() * 1000;
+      return setInterval(() => {
+        updateGarageData(garage.name);
+      }, 5000 + offset);
+    });
+
+    return () => {
+      intervals.forEach(clearInterval);
+    };
+  }, []);
 
   const removeGarage = (garageName) => {
     const updatedGarages = savedGarages.filter((name) => name !== garageName);
@@ -98,7 +132,7 @@ export default function SavedGaragesScreen() {
 
         {unsaved.length > 0 && (
           <>
-            <Text style={styles.sectionTitle}>📍 Other Garages</Text>
+            <Text style={styles.sectionTitle}>⚲ Other Garages</Text>
             {unsaved.map((garage) => renderGarageCard(garage, false))}
           </>
         )}
@@ -143,10 +177,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#1a1a1a',
     borderRadius: 14,
     padding: 16,
-    marginBottom: 20, // Increased for a more distinct separation
+    marginBottom: 20,
     borderColor: '#bf8441',
     borderWidth: 1,
-    // Add the shadow effect here
     shadowColor: '#dea663',
     shadowOffset: {
       width: 0,
@@ -189,6 +222,6 @@ const styles = StyleSheet.create({
   },
   cardEmoji: {
     fontSize: 27,
-    color: '#dea663', // Gold tone
+    color: '#dea663',
   },
 });

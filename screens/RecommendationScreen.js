@@ -133,7 +133,7 @@ export default function RecommendationScreen({ navigation }) {
 
           <Text style={styles.label}>Destination Building</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, styles.glowEffect]}
             placeholder="Start typing..."
             placeholderTextColor="#888"
             value={buildingQuery}
@@ -146,7 +146,7 @@ export default function RecommendationScreen({ navigation }) {
           />
 
           {showSuggestions && filteredBuildings.length > 0 && (
-            <View style={styles.suggestionsContainer}>
+            <View style={[styles.suggestionsContainer, styles.glowEffect]}>
               <FlatList
                 data={filteredBuildings}
                 keyExtractor={(item) => item}
@@ -176,21 +176,18 @@ export default function RecommendationScreen({ navigation }) {
               setValue={setSelectedTime}
               setItems={setTimeItems}
               placeholder="Select a time"
-              style={styles.dropdown}
+              style={[styles.dropdown, styles.glowEffect]}
               textStyle={styles.dropdownText}
-              dropDownContainerStyle={styles.dropdownContainer}
+              dropDownContainerStyle={[styles.dropdownContainer, styles.glowEffect]}
             />
           </View>
 
           <View style={{ height: timeOpen ? 200 : 0 }} />
 
-          <TouchableOpacity style={styles.button} onPress={handleRecommendation}>
+          <TouchableOpacity style={[styles.button, styles.glowEffect]} onPress={handleRecommendation}>
             <Text style={styles.buttonText}>Find My Spot</Text>
           </TouchableOpacity>
-
-          <Text style={styles.link} onPress={() => navigation.navigate('Upcoming Events')}>
-            🗓️ Upcoming Events
-          </Text>
+          
         </ScrollView>
       </KeyboardAvoidingView>
     </>
@@ -282,5 +279,15 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 16,
     textDecorationLine: 'underline',
+  },
+  glowEffect: {
+    shadowColor: '#dea663',
+    shadowOffset: {
+      width: 0,
+      height: 5,
+    },
+    shadowOpacity: 0.5,
+    shadowRadius: 10,
+    elevation: 10,
   },
 });

@@ -66,7 +66,7 @@ export default function SavedGaragesScreen() {
           )}
         </View>
         <Text style={styles.detail}>
-          🅿️ {garage.occupiedSpots}/{garage.totalSpots} occupied
+          <Text style={styles.cardEmoji}>🅿</Text> {garage.occupiedSpots}/{garage.totalSpots} occupied
         </Text>
         <Text style={[styles.status, { color: isFull ? '#FF6B6B' : '#2EC4B6' }]}>
           {isFull ? 'Full' : `${availableSpots} spots open`}
@@ -89,7 +89,7 @@ export default function SavedGaragesScreen() {
 
         {saved.length > 0 ? (
           <>
-            <Text style={styles.sectionTitle}>✅ Saved Garages</Text>
+            <Text style={styles.sectionTitle}><Text style={styles.cardEmoji}>★</Text>Saved Garages</Text>
             {saved.map((garage) => renderGarageCard(garage, true))}
           </>
         ) : (
@@ -143,9 +143,18 @@ const styles = StyleSheet.create({
     backgroundColor: '#1a1a1a',
     borderRadius: 14,
     padding: 16,
-    marginBottom: 16,
+    marginBottom: 20, // Increased for a more distinct separation
     borderColor: '#bf8441',
     borderWidth: 1,
+    // Add the shadow effect here
+    shadowColor: '#dea663',
+    shadowOffset: {
+      width: 0,
+      height: 5,
+    },
+    shadowOpacity: 0.5,
+    shadowRadius: 10,
+    elevation: 10,
   },
   cardHeader: {
     flexDirection: 'row',
@@ -177,5 +186,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     marginTop: 8,
+  },
+  cardEmoji: {
+    fontSize: 27,
+    color: '#dea663', // Gold tone
   },
 });
